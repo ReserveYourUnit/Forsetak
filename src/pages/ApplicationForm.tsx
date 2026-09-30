@@ -1,10 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchCountries, fetchProfessions } from '../services/catalogService';
-import { submitApplication } from '../services/applicationsService';
-import { ApplicantFormData } from '../types';
-import { useEffect } from 'react';
-import { Country, Profession } from '../types';
+import { submitApplication, uploadApplicantFile } from '../services/applicationsService';
+import { ApplicantFormData, Country, Profession } from '../types';
 
 const EMPTY: ApplicantFormData = {
   full_name: '',
@@ -45,6 +43,11 @@ export default function ApplicationForm() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [passportFile, setPassportFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+
   useEffect(() => {
     fetchCountries().then(setCountries);
     fetchProfessions().then(setProfessions);
@@ -54,15 +57,66 @@ export default function ApplicationForm() {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
+  const selectedProfession = professions.find((p) => p.id === form.profession_id);
+  // Default to requiring a CV until the profession is known, so we never
+  // silently skip a document that turns out to be required.
+  const cvRequired = selectedProfession ? selectedProfession.requires_cv : true;
+
   async function onSubmit() {
     if (!form.whatsapp_consent) {
       setError('يجب الموافقة على استخدام رقم WhatsApp للتواصل قبل إرسال الطلب.');
       return;
     }
+    if (cvRequired && !cvFile) {
+      setError('هذه المهنة تتطلب رفع السيرة الذاتية (CV) قبل إرسال الطلب.');
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
-    const result = await submitApplication(form, jobId ?? null, {});
+
+    const documents: { photoUrl?: string; cvUrl?: string; passportUrl?: string } = {};
+
+    if (photoFile) {
+      setUploadStatus('جاري رفع الصورة الشخصية...');
+      const res = await uploadApplicantFile('applicant-photos', photoFile);
+      if (!res.ok) {
+        setSubmitting(false);
+        setUploadStatus(null);
+        setError(res.error ?? 'تعذر رفع الصورة الشخصية.');
+        return;
+      }
+      documents.photoUrl = res.path;
+    }
+
+    if (cvFile) {
+      setUploadStatus('جاري رفع السيرة الذاتية...');
+      const res = await uploadApplicantFile('cvs', cvFile);
+      if (!res.ok) {
+        setSubmitting(false);
+        setUploadStatus(null);
+        setError(res.error ?? 'تعذر رفع السيرة الذاتية.');
+        return;
+      }
+      documents.cvUrl = res.path;
+    }
+
+    if (passportFile) {
+      setUploadStatus('جاري رفع صورة جواز السفر...');
+      const res = await uploadApplicantFile('passports', passportFile);
+      if (!res.ok) {
+        setSubmitting(false);
+        setUploadStatus(null);
+        setError(res.error ?? 'تعذر رفع صورة جواز السفر.');
+        return;
+      }
+      documents.passportUrl = res.path;
+    }
+
+    setUploadStatus('جاري إرسال الطلب...');
+    const result = await submitApplication(form, jobId ?? null, documents);
     setSubmitting(false);
+    setUploadStatus(null);
     if (!result.ok) {
       setError(result.error ?? 'حدث خطأ غير متوقع.');
       return;
@@ -150,16 +204,42 @@ export default function ApplicationForm() {
         {step === 3 && (
           <div className="space-y-4">
             <div className="rounded-2xl bg-white p-4 shadow-card">
-              <p className="mb-2 text-sm font-bold text-navy">المستندات</p>
-              <p className="mb-3 text-xs text-slate-500">
-                رفع الصورة الشخصية والسيرة الذاتية وصورة الجواز يتم عبر Supabase Storage (buckets: applicant-photos, cvs,
-                passports) بعد ربط قاعدة البيانات — الملفات الحساسة تُحفظ بروابط موقّعة غير عامة.
-              </p>
-              <div className="grid grid-cols-1 gap-2 text-sm text-slate-400">
-                <div className="rounded-xl border border-dashed border-slate-300 p-4 text-center">صورة شخصية</div>
-                <div className="rounded-xl border border-dashed border-slate-300 p-4 text-center">السيرة الذاتية (CV)</div>
-                <div className="rounded-xl border border-dashed border-slate-300 p-4 text-center">صورة جواز السفر (اختياري)</div>
+              <p className="mb-3 text-sm font-bold text-navy">المستندات</p>
+
+              <div className="space-y-3">
+                <FileField
+                  label="صورة شخصية"
+                  file={photoFile}
+                  onChange={setPhotoFile}
+                  required={false}
+                />
+
+                {cvRequired ? (
+                  <FileField
+                    label="السيرة الذاتية (CV) — مطلوبة لهذه المهنة"
+                    file={cvFile}
+                    onChange={setCvFile}
+                    required
+                    accept=".pdf,.doc,.docx,image/*"
+                  />
+                ) : (
+                  <p className="rounded-xl bg-slate-50 p-3 text-xs text-slate-500">
+                    هذه المهنة لا تتطلب رفع سيرة ذاتية (CV).
+                  </p>
+                )}
+
+                <FileField
+                  label="صورة جواز السفر (اختياري)"
+                  file={passportFile}
+                  onChange={setPassportFile}
+                  required={false}
+                />
               </div>
+
+              <p className="mt-3 text-[11px] text-slate-400">
+                الملفات تُحفظ في مساحة تخزين خاصة (Supabase Storage) غير عامة — لا يطّلع عليها إلا صاحب الطلب وفريق
+                الإدارة.
+              </p>
             </div>
 
             <label className="flex items-start gap-2 rounded-2xl bg-white p-4 text-sm text-slate-600 shadow-card">
@@ -179,6 +259,7 @@ export default function ApplicationForm() {
           </div>
         )}
 
+        {uploadStatus && <p className="rounded-xl bg-sky-50 p-3 text-sm text-sky-700">{uploadStatus}</p>}
         {error && <p className="rounded-xl bg-rose-50 p-3 text-sm text-rose-600">{error}</p>}
 
         <div className="flex gap-3 pb-6 pt-2">
@@ -281,6 +362,35 @@ function Toggle({ label, value, onChange }: { label: string; value: boolean; onC
       >
         <span className={`block h-5 w-5 translate-y-0.5 rounded-full bg-white shadow transition ${value ? '-translate-x-0.5' : '-translate-x-6'}`} />
       </button>
+    </div>
+  );
+}
+
+function FileField({
+  label,
+  file,
+  onChange,
+  required,
+  accept = 'image/*'
+}: {
+  label: string;
+  file: File | null;
+  onChange: (f: File | null) => void;
+  required?: boolean;
+  accept?: string;
+}) {
+  return (
+    <div>
+      <label className="mb-1 block text-sm font-medium text-slate-600">
+        {label} {required && <span className="text-rose-500">*</span>}
+      </label>
+      <input
+        type="file"
+        accept={accept}
+        onChange={(e) => onChange(e.target.files?.[0] ?? null)}
+        className="w-full rounded-xl border border-dashed border-slate-300 bg-white p-3 text-sm"
+      />
+      {file && <p className="mt-1 text-[11px] text-emerald-600">تم اختيار: {file.name}</p>}
     </div>
   );
 }
