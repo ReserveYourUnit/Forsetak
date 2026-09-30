@@ -7,6 +7,44 @@ export interface SubmitApplicationResult {
   error?: string;
 }
 
+/**
+ * Uploads one applicant file (photo / cv / passport) to its private Storage
+ * bucket under the signed-in user's folder, per the RLS path convention
+ * (<user_id>/<filename>). Returns the storage path on success, or null on
+ * failure (never fakes a successful upload).
+ */
+export async function uploadApplicantFile(
+  bucket: 'applicant-photos' | 'cvs' | 'passports',
+  file: File
+): Promise<{ ok: boolean; path?: string; error?: string }> {
+  if (!isSupabaseConfigured) {
+    return { ok: false, error: 'التطبيق غير متصل بقاعدة بيانات حقيقية بعد.' };
+  }
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { ok: false, error: 'يجب تسجيل الدخول أولًا.' };
+  }
+  const safeName = file.name.replace(/[^\w.\-]+/g, '_');
+  const path = `${user.id}/${Date.now()}-${safeName}`;
+  const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
+  if (error) {
+    return { ok: false, error: error.message };
+  }
+  return { ok: true, path };
+}
+
+/**
+ * Creates the applicant row + application row inside Supabase, then invokes
+ * the `send-whatsapp` Edge Function to queue the confirmation message.
+ *
+ * IMPORTANT: this function does not run against a real database until
+ * Supabase is configured (see README.md). Until then it returns ok:false
+ * with a clear error instead of pretending the submission succeeded —
+ * per the project rules, we never fabricate a successful submission,
+ * payment, or WhatsApp send.
+ */
 export async function submitApplication(
   form: ApplicantFormData,
   jobId: string | null,
@@ -28,6 +66,9 @@ export async function submitApplication(
     return { ok: false, error: 'يجب تسجيل الدخول أولًا لإرسال الطلب.' };
   }
 
+  // application_number is generated server-side by a Postgres function
+  // (generate_application_number) via a BEFORE INSERT trigger — see
+  // supabase/schema.sql — so two concurrent submissions can never collide.
   const { data: applicant, error: applicantError } = await supabase
     .from('applicants')
     .upsert(
@@ -87,9 +128,12 @@ export async function submitApplication(
     return { ok: false, error: applicationError?.message ?? 'تعذر إنشاء رقم الطلب.' };
   }
 
+  // Fire-and-forget: queue the WhatsApp confirmation. This never claims
+  // success to the caller — the Edge Function itself records
+  // "pending_whatsapp" unless real Meta credentials are configured.
   await supabase.functions.invoke('send-whatsapp', {
     body: { applicantId: applicant.id, applicationNumber: application.application_number }
   });
 
   return { ok: true, applicationNumber: application.application_number };
-        }
+}
