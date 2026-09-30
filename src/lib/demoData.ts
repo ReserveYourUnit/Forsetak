@@ -1,4 +1,11 @@
 // ⚠️ DEMO DATA ONLY.
+// This file exists so the UI is browsable before a real Supabase project is
+// connected. Every record here is fictional placeholder content (marked
+// is_demo: true) and must never be presented to real applicants as an
+// actual job offer or employer. Once VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY
+// are set (see .env.example), the app should be wired to fetch from Supabase
+// instead — the fetch functions in src/services/* already check
+// isSupabaseConfigured and fall back to this file only when it's false.
 import { Country, Job, Profession } from '../types';
 
 export const DEMO_COUNTRIES: Country[] = [
@@ -18,18 +25,20 @@ export const DEMO_COUNTRIES: Country[] = [
 ];
 
 export const DEMO_PROFESSIONS: Profession[] = [
-  { id: 'electrician', name: 'كهربائي', category: 'فني', active: true },
-  { id: 'plumber', name: 'سباك', category: 'فني', active: true },
-  { id: 'carpenter', name: 'نجار', category: 'فني', active: true },
-  { id: 'driver', name: 'سائق', category: 'خدمات', active: true },
-  { id: 'chef', name: 'طباخ', category: 'ضيافة', active: true },
-  { id: 'production', name: 'عامل إنتاج', category: 'صناعة', active: true },
-  { id: 'nurse', name: 'ممرض/ة', category: 'طبي', active: true },
-  { id: 'hvac', name: 'فني تكييف وتبريد', category: 'فني', active: true },
-  { id: 'security', name: 'حارس أمن', category: 'خدمات', active: true },
-  { id: 'accountant', name: 'محاسب', category: 'إداري', active: true }
+  { id: 'electrician', name: 'كهربائي', category: 'فني', active: true, requires_cv: false },
+  { id: 'plumber', name: 'سباك', category: 'فني', active: true, requires_cv: false },
+  { id: 'carpenter', name: 'نجار', category: 'فني', active: true, requires_cv: false },
+  { id: 'driver', name: 'سائق', category: 'خدمات', active: true, requires_cv: false },
+  { id: 'chef', name: 'طباخ', category: 'ضيافة', active: true, requires_cv: false },
+  { id: 'production', name: 'عامل إنتاج', category: 'صناعة', active: true, requires_cv: false },
+  { id: 'nurse', name: 'ممرض/ة', category: 'طبي', active: true, requires_cv: true },
+  { id: 'hvac', name: 'فني تكييف وتبريد', category: 'فني', active: true, requires_cv: false },
+  { id: 'security', name: 'حارس أمن', category: 'خدمات', active: true, requires_cv: false },
+  { id: 'accountant', name: 'محاسب', category: 'إداري', active: true, requires_cv: true }
 ];
 
+// DEMO listings only — real listings must come from an Admin-approved
+// company record once Supabase is connected (see supabase/schema.sql).
 export const DEMO_JOBS: Job[] = [
   {
     id: 'demo-1',
