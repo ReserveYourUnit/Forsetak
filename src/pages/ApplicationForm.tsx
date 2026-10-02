@@ -43,7 +43,6 @@ export default function ApplicationForm() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [passportFile, setPassportFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
@@ -75,19 +74,7 @@ export default function ApplicationForm() {
     setSubmitting(true);
     setError(null);
 
-    const documents: { photoUrl?: string; cvUrl?: string; passportUrl?: string } = {};
-
-    if (photoFile) {
-      setUploadStatus('جاري رفع الصورة الشخصية...');
-      const res = await uploadApplicantFile('applicant-photos', photoFile);
-      if (!res.ok) {
-        setSubmitting(false);
-        setUploadStatus(null);
-        setError(res.error ?? 'تعذر رفع الصورة الشخصية.');
-        return;
-      }
-      documents.photoUrl = res.path;
-    }
+    const documents: { cvUrl?: string; passportUrl?: string } = {};
 
     if (cvFile) {
       setUploadStatus('جاري رفع السيرة الذاتية...');
@@ -207,13 +194,6 @@ export default function ApplicationForm() {
               <p className="mb-3 text-sm font-bold text-navy">المستندات</p>
 
               <div className="space-y-3">
-                <FileField
-                  label="صورة شخصية"
-                  file={photoFile}
-                  onChange={setPhotoFile}
-                  required={false}
-                />
-
                 {cvRequired ? (
                   <FileField
                     label="السيرة الذاتية (CV) — مطلوبة لهذه المهنة"
@@ -393,4 +373,4 @@ function FileField({
       {file && <p className="mt-1 text-[11px] text-emerald-600">تم اختيار: {file.name}</p>}
     </div>
   );
-}
+                }
