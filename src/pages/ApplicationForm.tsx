@@ -121,7 +121,7 @@ export default function ApplicationForm() {
       setError(result.error ?? 'حدث خطأ غير متوقع.');
       return;
     }
-    navigate(`/payment/${result.applicationNumber}`);
+    navigate(`/submitted/${result.applicationNumber}`);
   }
 
   return (
