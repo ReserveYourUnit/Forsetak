@@ -9,6 +9,7 @@ import More from './pages/More';
 import Profile from './pages/Profile';
 import MyApplications from './pages/MyApplications';
 import ApplicationForm from './pages/ApplicationForm';
+import ApplicationSubmitted from './pages/ApplicationSubmitted';
 import Payment from './pages/Payment';
 import Legal from './pages/Legal';
 import Professions from './pages/Professions';
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/my-applications" element={<MyApplications />} />
         <Route path="/apply" element={<ApplicationForm />} />
         <Route path="/apply/:jobId" element={<ApplicationForm />} />
+        <Route path="/submitted/:applicationNumber" element={<ApplicationSubmitted />} />
         <Route path="/payment/:applicationNumber" element={<Payment />} />
         <Route path="/legal/:page" element={<Legal />} />
         <Route path="/notifications" element={<SimplePage title="الإشعارات" description="لا توجد إشعارات جديدة حاليًا." />} />
