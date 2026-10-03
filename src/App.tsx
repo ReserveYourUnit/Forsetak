@@ -13,6 +13,7 @@ import ApplicationSubmitted from './pages/ApplicationSubmitted';
 import Payment from './pages/Payment';
 import Legal from './pages/Legal';
 import Professions from './pages/Professions';
+import ProfessionDetail from './pages/ProfessionDetail';
 import { SimplePage } from './pages/SimplePage';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -47,6 +48,7 @@ export default function App() {
         <Route path="/help" element={<SimplePage title="مركز المساعدة" description="تواصل معنا عبر WhatsApp من صفحة المزيد." />} />
         <Route path="/settings" element={<SimplePage title="الإعدادات" description="إعدادات الحساب واللغة والإشعارات." />} />
         <Route path="/professions" element={<Professions />} />
+        <Route path="/professions/:id" element={<ProfessionDetail />} />
         <Route path="/companies" element={<SimplePage title="الشركات الأجنبية" description="قائمة الشركات المعتمدة قريبًا." />} />
         <Route path="/tips" element={<SimplePage title="نصائح السفر والعمل" description="محتوى إرشادي قادم." />} />
 
@@ -63,4 +65,4 @@ export default function App() {
       </Routes>
     </BrowserRouter>
   );
-}
+          }
