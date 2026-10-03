@@ -6,3 +6,92 @@ html,
 body {
   font-family: 'Cairo', 'Tajawal', system-ui, sans-serif;
 }
+
+/* ===== الوضع الداكن ===== */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #0b1220;
+  color: #e2e8f0;
+}
+
+/* الخلفيات */
+html.dark .bg-slate-50 {
+  background-color: #0b1220;
+}
+html.dark .bg-white {
+  background-color: #111b2e;
+}
+html.dark .bg-slate-100 {
+  background-color: #1a2740;
+}
+html.dark .bg-slate-200 {
+  background-color: #2a3a57;
+}
+html.dark .bg-navy {
+  background-color: #153e70;
+}
+
+/* النصوص */
+html.dark .text-navy {
+  color: #e8eef7;
+}
+html.dark .text-slate-400 {
+  color: #8ea0ba;
+}
+html.dark .text-slate-500 {
+  color: #a3b3c9;
+}
+html.dark .text-slate-600 {
+  color: #bccadc;
+}
+html.dark .text-slate-700 {
+  color: #d3deec;
+}
+
+/* الحدود */
+html.dark .border-slate-50,
+html.dark .border-slate-100 {
+  border-color: #1f2d47;
+}
+html.dark .border-slate-200 {
+  border-color: #2a3a57;
+}
+html.dark .border-slate-300 {
+  border-color: #36496b;
+}
+
+/* الصناديق الملونة */
+html.dark .bg-sky-50 {
+  background-color: #10304a;
+}
+html.dark .text-sky-600,
+html.dark .text-sky-700 {
+  color: #7cc4f0;
+}
+html.dark .bg-amber-50 {
+  background-color: #3a2b10;
+}
+html.dark .text-amber-700 {
+  color: #f5c26b;
+}
+html.dark .bg-rose-50 {
+  background-color: #3d1a22;
+}
+html.dark .text-rose-600 {
+  color: #fb8da0;
+}
+html.dark .bg-emerald-50 {
+  background-color: #0f3327;
+}
+html.dark .text-emerald-600,
+html.dark .text-emerald-700 {
+  color: #6fdcb0;
+}
+
+/* الزراير الصفراء يفضل نصها كحلي عشان يتقرا */
+html.dark .bg-amber.text-navy {
+  color: #0b2545;
+}
