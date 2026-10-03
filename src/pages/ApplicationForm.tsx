@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'; // NEW
 import { fetchCountries, fetchProfessions } from '../services/catalogService';
 import { submitApplication, uploadApplicantFile } from '../services/applicationsService';
 import { ApplicantFormData, Country, Profession } from '../types';
@@ -35,6 +35,7 @@ const STEPS = ['البيانات الشخصية', 'بيانات العمل', 'ب
 
 export default function ApplicationForm() {
   const { jobId } = useParams();
+  const [searchParams] = useSearchParams(); // NEW
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<ApplicantFormData>(EMPTY);
@@ -51,6 +52,12 @@ export default function ApplicationForm() {
     fetchCountries().then(setCountries);
     fetchProfessions().then(setProfessions);
   }, []);
+
+  // NEW: اختيار المهنة تلقائيًا لو جاية من صفحة المهنة (?profession=ID)
+  useEffect(() => {
+    const preselected = searchParams.get('profession');
+    if (preselected) setForm((f) => ({ ...f, profession_id: preselected }));
+  }, [searchParams]);
 
   function update<K extends keyof ApplicantFormData>(key: K, value: ApplicantFormData[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -373,4 +380,4 @@ function FileField({
       {file && <p className="mt-1 text-[11px] text-emerald-600">تم اختيار: {file.name}</p>}
     </div>
   );
-                }
+                                                        }
