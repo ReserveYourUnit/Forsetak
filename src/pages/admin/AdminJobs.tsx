@@ -43,6 +43,32 @@ const EMPTY = {
   benefits: ''
 };
 
+const CURRENCIES: { value: string; label: string }[] = [
+  { value: 'USD', label: 'دولار $' },
+  { value: 'EUR', label: 'يورو €' },
+  { value: 'EGP', label: 'جنيه مصري' },
+  { value: 'SAR', label: 'ريال سعودي' },
+  { value: 'AED', label: 'درهم إماراتي' },
+  { value: 'KWD', label: 'دينار كويتي' },
+  { value: 'QAR', label: 'ريال قطري' },
+  { value: 'BHD', label: 'دينار بحريني' },
+  { value: 'OMR', label: 'ريال عماني' },
+  { value: 'JOD', label: 'دينار أردني' },
+  { value: 'IQD', label: 'دينار عراقي' },
+  { value: 'LBP', label: 'ليرة لبنانية' },
+  { value: 'SYP', label: 'ليرة سورية' },
+  { value: 'YER', label: 'ريال يمني' },
+  { value: 'LYD', label: 'دينار ليبي' },
+  { value: 'TND', label: 'دينار تونسي' },
+  { value: 'DZD', label: 'دينار جزائري' },
+  { value: 'MAD', label: 'درهم مغربي' },
+  { value: 'SDG', label: 'جنيه سوداني' },
+  { value: 'MRU', label: 'أوقية موريتانية' },
+  { value: 'SOS', label: 'شلن صومالي' },
+  { value: 'DJF', label: 'فرنك جيبوتي' },
+  { value: 'KMF', label: 'فرنك قمري' }
+];
+
 const STATUS_AR: Record<string, string> = {
   published: 'منشورة',
   pending: 'قيد المراجعة',
@@ -205,11 +231,11 @@ export default function AdminJobs() {
           </div>
           <div className="grid grid-cols-2 gap-2">
             <select className={input} value={form.currency} onChange={(e) => set('currency', e.target.value)}>
-              <option value="USD">دولار $</option>
-              <option value="EUR">يورو €</option>
-              <option value="EGP">جنيه مصري</option>
-              <option value="SAR">ريال سعودي</option>
-              <option value="AED">درهم إماراتي</option>
+              {CURRENCIES.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                </option>
+              ))}
             </select>
             <input className={input} type="number" placeholder="عدد المطلوبين" value={form.vacancies} onChange={(e) => set('vacancies', e.target.value)} />
           </div>
@@ -258,4 +284,4 @@ export default function AdminJobs() {
       </main>
     </div>
   );
-}
+      }
