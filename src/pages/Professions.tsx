@@ -43,7 +43,7 @@ export default function Professions() {
         {filtered.map((p) => (
           <button
             key={p.id}
-            onClick={() => navigate(`/jobs?q=${encodeURIComponent(p.name)}`)}
+            onClick={() => navigate(`/professions/${p.id}`)}
             className="rounded-2xl border border-slate-100 bg-white p-4 text-right shadow-card"
           >
             <p className="font-bold text-navy">{p.name}</p>
@@ -55,4 +55,4 @@ export default function Professions() {
       <BottomNavigation />
     </div>
   );
-}
+      }
