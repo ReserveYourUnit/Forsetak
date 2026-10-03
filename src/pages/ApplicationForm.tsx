@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'; // NEW
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { fetchCountries, fetchProfessions } from '../services/catalogService';
 import { submitApplication, uploadApplicantFile } from '../services/applicationsService';
 import { ApplicantFormData, Country, Profession } from '../types';
@@ -35,7 +35,7 @@ const STEPS = ['البيانات الشخصية', 'بيانات العمل', 'ب
 
 export default function ApplicationForm() {
   const { jobId } = useParams();
-  const [searchParams] = useSearchParams(); // NEW
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<ApplicantFormData>(EMPTY);
@@ -53,7 +53,7 @@ export default function ApplicationForm() {
     fetchProfessions().then(setProfessions);
   }, []);
 
-  // NEW: اختيار المهنة تلقائيًا لو جاية من صفحة المهنة (?profession=ID)
+  // اختيار المهنة تلقائيًا لو جاية من صفحة المهنة (?profession=ID)
   useEffect(() => {
     const preselected = searchParams.get('profession');
     if (preselected) setForm((f) => ({ ...f, profession_id: preselected }));
@@ -239,9 +239,8 @@ export default function ApplicationForm() {
               أوافق على استخدام رقم WhatsApp الخاص بي للتواصل معي بخصوص طلبي والفرص الوظيفية المرتبطة به.
             </label>
 
-            <div className="rounded-2xl bg-amber-50 p-4 text-xs leading-relaxed text-amber-700">
-              رسوم استمارة تأكيد الطلب: 105 جنيه مصري. سداد الرسوم لا يُعد ضمانًا للحصول على وظيفة أو تأشيرة أو عقد عمل أو
-              السفر، ويخضع الترشيح والقبول النهائي لشروط جهة العمل والجهات المختصة.
+            <div className="rounded-2xl bg-amber-50 p-4 text-sm leading-relaxed text-amber-700">
+              بعد الضغط على استكمال الطلب، سيقوم أحد أعضاء فريق العمل بالتواصل معكم، برجاء عدم غلق هاتفكم.
             </div>
           </div>
         )}
@@ -380,4 +379,4 @@ function FileField({
       {file && <p className="mt-1 text-[11px] text-emerald-600">تم اختيار: {file.name}</p>}
     </div>
   );
-                                                        }
+}
