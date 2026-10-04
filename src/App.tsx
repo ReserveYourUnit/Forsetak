@@ -14,6 +14,7 @@ import Payment from './pages/Payment';
 import Legal from './pages/Legal';
 import Professions from './pages/Professions';
 import ProfessionDetail from './pages/ProfessionDetail';
+import Settings from './pages/Settings';
 import { SimplePage } from './pages/SimplePage';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -46,7 +47,7 @@ export default function App() {
         <Route path="/legal/:page" element={<Legal />} />
         <Route path="/notifications" element={<SimplePage title="الإشعارات" description="لا توجد إشعارات جديدة حاليًا." />} />
         <Route path="/help" element={<SimplePage title="مركز المساعدة" description="تواصل معنا عبر WhatsApp من صفحة المزيد." />} />
-        <Route path="/settings" element={<SimplePage title="الإعدادات" description="إعدادات الحساب واللغة والإشعارات." />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="/professions" element={<Professions />} />
         <Route path="/professions/:id" element={<ProfessionDetail />} />
         <Route path="/companies" element={<SimplePage title="الشركات الأجنبية" description="قائمة الشركات المعتمدة قريبًا." />} />
