@@ -15,6 +15,7 @@ import Legal from './pages/Legal';
 import Professions from './pages/Professions';
 import ProfessionDetail from './pages/ProfessionDetail';
 import Settings from './pages/Settings';
+import Tips from './pages/Tips';
 import { SimplePage } from './pages/SimplePage';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -51,7 +52,7 @@ export default function App() {
         <Route path="/professions" element={<Professions />} />
         <Route path="/professions/:id" element={<ProfessionDetail />} />
         <Route path="/companies" element={<SimplePage title="الشركات الأجنبية" description="قائمة الشركات المعتمدة قريبًا." />} />
-        <Route path="/tips" element={<SimplePage title="نصائح السفر والعمل" description="محتوى إرشادي قادم." />} />
+        <Route path="/tips" element={<Tips />} />
 
         {/* Admin — separate route tree, gated by admin_users + RLS */}
         <Route path="/admin" element={<AdminLogin />} />
@@ -66,4 +67,4 @@ export default function App() {
       </Routes>
     </BrowserRouter>
   );
-}
+        }
