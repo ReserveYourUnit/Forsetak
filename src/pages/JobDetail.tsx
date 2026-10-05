@@ -33,7 +33,6 @@ export default function JobDetail() {
         </button>
         <h1 className="truncate text-lg font-bold">{job.title}</h1>
       </div>
-
       <div className="mx-4 -mt-2 mt-4 rounded-2xl bg-white p-4 shadow-card">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-50 text-2xl">{job.country.flag_url}</div>
@@ -46,9 +45,8 @@ export default function JobDetail() {
           </div>
         </div>
         <p className="mt-3 text-lg font-extrabold text-sky">
-          {job.currency === 'EUR' ? '€' : '$'} {job.salary_min.toLocaleString()} - {job.salary_max.toLocaleString()}
+          {job.salary_min.toLocaleString()} {job.currency} - {job.salary_max.toLocaleString()} {job.currency}
         </p>
-
         <div className="mt-4 grid grid-cols-4 gap-2">
           {PERKS.filter((p) => job[p.key]).map((p) => (
             <div key={p.key} className="flex flex-col items-center gap-1 rounded-xl bg-slate-50 py-3 text-center">
@@ -58,12 +56,10 @@ export default function JobDetail() {
           ))}
         </div>
       </div>
-
       <div className="mx-4 mt-4 rounded-2xl bg-white p-4 shadow-card">
         <h3 className="mb-2 font-bold text-navy">وصف الوظيفة</h3>
         <p className="text-sm leading-relaxed text-slate-600">{job.description}</p>
       </div>
-
       {job.requirements.length > 0 && (
         <div className="mx-4 mt-4 rounded-2xl bg-white p-4 shadow-card">
           <h3 className="mb-2 font-bold text-navy">المتطلبات</h3>
@@ -74,7 +70,6 @@ export default function JobDetail() {
           </ul>
         </div>
       )}
-
       {job.benefits.length > 0 && (
         <div className="mx-4 mt-4 rounded-2xl bg-white p-4 shadow-card">
           <h3 className="mb-2 font-bold text-navy">المميزات</h3>
@@ -85,7 +80,6 @@ export default function JobDetail() {
           </ul>
         </div>
       )}
-
       <div className="fixed bottom-0 inset-x-0 z-20 border-t border-slate-200 bg-white p-4">
         <button
           onClick={() => navigate(`/apply/${job.id}`)}
