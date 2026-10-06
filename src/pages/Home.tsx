@@ -4,8 +4,10 @@ import { AppHeader } from '../components/AppHeader';
 import { BottomNavigation } from '../components/BottomNavigation';
 import { SearchBar } from '../components/SearchBar';
 import { JobCard } from '../components/JobCard';
-import { fetchJobs } from '../services/catalogService';
+import { BannerCarousel } from '../components/BannerCarousel';
+import { fetchJobs, fetchBanners } from '../services/catalogService';
 import { Job } from '../types';
+import { Banner } from '../types/banner';
 
 const QUICK_LINKS = [
   { to: '/jobs', label: 'الوظائف', icon: '💼' },
@@ -19,10 +21,15 @@ const QUICK_LINKS = [
 export default function Home() {
   const [query, setQuery] = useState('');
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchJobs().then((data) => setJobs(data.slice(0, 4)));
+  }, []);
+
+  useEffect(() => {
+    fetchBanners().then(setBanners);
   }, []);
 
   function onSearchSubmit() {
@@ -43,6 +50,8 @@ export default function Home() {
       <div className="mx-4 mt-4" onKeyDown={(e) => e.key === 'Enter' && onSearchSubmit()}>
         <SearchBar value={query} onChange={setQuery} />
       </div>
+
+      <BannerCarousel banners={banners} />
 
       <div className="mx-4 mt-5 grid grid-cols-3 gap-3">
         {QUICK_LINKS.map((link) => (
