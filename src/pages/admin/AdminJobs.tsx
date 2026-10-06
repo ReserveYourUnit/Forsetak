@@ -96,6 +96,45 @@ function currencyForCountry(name?: string | null): string {
   return match ? CURRENCY_BY_COUNTRY[match] : '';
 }
 
+// مدن كل دولة، تُقترح تلقائيًا بعد اختيار الدولة.
+const CITIES_BY_COUNTRY: Record<string, string[]> = {
+  'السعودية': ['الرياض', 'جدة', 'مكة المكرمة', 'المدينة المنورة', 'الدمام', 'الخبر', 'الظهران', 'الطائف', 'تبوك', 'بريدة', 'خميس مشيط', 'نجران', 'حائل', 'جازان', 'ينبع', 'الأحساء', 'أبها'],
+  'الإمارات': ['دبي', 'أبوظبي', 'الشارقة', 'عجمان', 'رأس الخيمة', 'الفجيرة', 'أم القيوين', 'العين'],
+  'قطر': ['الدوحة', 'الريان', 'الوكرة', 'الخور', 'أم صلال', 'مسيعيد', 'دخان'],
+  'الكويت': ['مدينة الكويت', 'حولي', 'الفروانية', 'الأحمدي', 'الجهراء', 'مبارك الكبير'],
+  'البحرين': ['المنامة', 'المحرق', 'الرفاع', 'مدينة حمد', 'مدينة عيسى', 'سترة'],
+  'عمان': ['مسقط', 'صلالة', 'صحار', 'نزوى', 'صور', 'البريمي', 'الرستاق'],
+  'سلطنة عمان': ['مسقط', 'صلالة', 'صحار', 'نزوى', 'صور', 'البريمي', 'الرستاق'],
+  'الأردن': ['عمّان', 'الزرقاء', 'إربد', 'العقبة', 'السلط', 'مادبا', 'الكرك'],
+  'مصر': ['القاهرة', 'الجيزة', 'الإسكندرية', 'المنصورة', 'طنطا', 'الزقازيق', 'أسيوط', 'الأقصر', 'أسوان', 'بورسعيد', 'السويس', 'دمياط', 'شرم الشيخ', 'الغردقة'],
+  'العراق': ['بغداد', 'البصرة', 'الموصل', 'أربيل', 'النجف', 'كربلاء', 'السليمانية', 'كركوك'],
+  'لبنان': ['بيروت', 'طرابلس', 'صيدا', 'صور', 'جونيه', 'زحلة'],
+  'سوريا': ['دمشق', 'حلب', 'حمص', 'حماة', 'اللاذقية', 'طرطوس'],
+  'اليمن': ['صنعاء', 'عدن', 'تعز', 'الحديدة', 'المكلا'],
+  'ليبيا': ['طرابلس', 'بنغازي', 'مصراتة', 'سبها'],
+  'تونس': ['تونس العاصمة', 'صفاقس', 'سوسة', 'بنزرت', 'القيروان'],
+  'الجزائر': ['الجزائر العاصمة', 'وهران', 'قسنطينة', 'عنابة', 'سطيف'],
+  'المغرب': ['الرباط', 'الدار البيضاء', 'مراكش', 'فاس', 'طنجة', 'أكادير'],
+  'السودان': ['الخرطوم', 'أم درمان', 'بورتسودان', 'كسلا'],
+  'فلسطين': ['رام الله', 'غزة', 'الخليل', 'نابلس', 'بيت لحم', 'القدس'],
+  'ألمانيا': ['برلين', 'ميونخ', 'هامبورغ', 'فرانكفورت', 'كولونيا', 'شتوتغارت'],
+  'فرنسا': ['باريس', 'مرسيليا', 'ليون', 'تولوز', 'نيس'],
+  'إيطاليا': ['روما', 'ميلانو', 'نابولي', 'تورينو'],
+  'إسبانيا': ['مدريد', 'برشلونة', 'فالنسيا', 'إشبيلية'],
+  'هولندا': ['أمستردام', 'روتردام', 'لاهاي'],
+  'تركيا': ['إسطنبول', 'أنقرة', 'إزمير', 'بورصة', 'أنطاليا'],
+  'المملكة المتحدة': ['لندن', 'مانشستر', 'برمنغهام', 'ليدز'],
+  'بريطانيا': ['لندن', 'مانشستر', 'برمنغهام', 'ليدز'],
+  'كندا': ['تورونتو', 'مونتريال', 'فانكوفر']
+};
+
+function citiesForCountry(name?: string | null): string[] {
+  if (!name) return [];
+  if (CITIES_BY_COUNTRY[name]) return CITIES_BY_COUNTRY[name];
+  const match = Object.keys(CITIES_BY_COUNTRY).find((k) => name.includes(k) || k.includes(name));
+  return match ? CITIES_BY_COUNTRY[match] : [];
+}
+
 const STATUS_AR: Record<string, string> = {
   published: 'منشورة',
   pending: 'قيد المراجعة',
@@ -116,6 +155,7 @@ export default function AdminJobs() {
   const [countries, setCountries] = useState<Country[]>([]);
   const [form, setForm] = useState(EMPTY);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [cityCustom, setCityCustom] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
   async function load() {
@@ -158,7 +198,8 @@ export default function AdminJobs() {
 
   function setCountryId(id: string) {
     const c = countries.find((x) => x.id === id);
-    setForm((f) => ({ ...f, country_id: id, currency: id ? currencyForCountry(c?.name) : '' }));
+    setForm((f) => ({ ...f, country_id: id, currency: id ? currencyForCountry(c?.name) : '', city_name: '' }));
+    setCityCustom(false);
   }
 
   async function startEdit(id: string) {
@@ -191,6 +232,9 @@ export default function AdminJobs() {
       requirements: Array.isArray(data.requirements) ? data.requirements.join('\n') : '',
       benefits: Array.isArray(data.benefits) ? data.benefits.join('\n') : ''
     });
+    const editCountryName = countries.find((c) => c.id === (data.country_id ?? ''))?.name;
+    const editCityList = citiesForCountry(editCountryName);
+    setCityCustom(editCityList.length === 0 ? true : !!data.city_name && !editCityList.includes(data.city_name));
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -277,6 +321,9 @@ export default function AdminJobs() {
     </label>
   );
 
+  const selectedCountryName = countries.find((c) => c.id === form.country_id)?.name;
+  const cityList = citiesForCountry(selectedCountryName);
+
   return (
     <div className="flex min-h-screen bg-slate-50">
       <AdminSidebar active="jobs" />
@@ -333,7 +380,52 @@ export default function AdminJobs() {
             <div className={`${input} bg-slate-50 text-slate-500`}>{form.currency || 'اختر الدولة أولاً'}</div>
           </div>
 
-          <input className={input} placeholder="المدينة" value={form.city_name} onChange={(e) => set('city_name', e.target.value)} />
+          <div>
+            <label className="mb-1 block text-xs text-slate-500">المدينة</label>
+            {cityList.length > 0 && !cityCustom ? (
+              <select
+                className={input}
+                value={form.city_name}
+                onChange={(e) => {
+                  if (e.target.value === '__other__') {
+                    setCityCustom(true);
+                    set('city_name', '');
+                  } else {
+                    set('city_name', e.target.value);
+                  }
+                }}
+              >
+                <option value="">اختر المدينة</option>
+                {cityList.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
+                <option value="__other__">مدينة أخرى (اكتبها يدويًا)</option>
+              </select>
+            ) : (
+              <div className="flex items-center gap-2">
+                <input
+                  className={`${input} flex-1`}
+                  placeholder="اكتب اسم المدينة"
+                  value={form.city_name}
+                  onChange={(e) => set('city_name', e.target.value)}
+                />
+                {cityList.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCityCustom(false);
+                      set('city_name', '');
+                    }}
+                    className="shrink-0 rounded-lg bg-slate-100 px-2 py-2.5 text-xs text-slate-600"
+                  >
+                    اختيار من القائمة
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
 
           <div>
             <label className="mb-1 block text-xs text-slate-500">الراتب من</label>
@@ -420,4 +512,4 @@ export default function AdminJobs() {
       </main>
     </div>
   );
-}
+  }
