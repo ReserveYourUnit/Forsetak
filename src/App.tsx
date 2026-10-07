@@ -26,6 +26,7 @@ import AdminSettings from './pages/admin/AdminSettings';
 import AdminJobs from './pages/admin/AdminJobs';
 import AdminCompanies from './pages/admin/AdminCompanies';
 import AdminProfessions from './pages/admin/AdminProfessions';
+import AdminBanners from './pages/admin/AdminBanners';
 
 export default function App() {
   return (
@@ -64,7 +65,8 @@ export default function App() {
         <Route path="/admin/jobs" element={<AdminJobs />} />
         <Route path="/admin/companies" element={<AdminCompanies />} />
         <Route path="/admin/professions" element={<AdminProfessions />} />
+        <Route path="/admin/banners" element={<AdminBanners />} />
       </Routes>
     </BrowserRouter>
   );
-        }
+                                                  }
