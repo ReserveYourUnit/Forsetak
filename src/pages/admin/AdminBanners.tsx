@@ -16,6 +16,7 @@ export default function AdminBanners() {
   const [form, setForm] = useState(EMPTY);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   async function load() {
     const { data, error } = await supabase.from('banners').select('*').order('sort_order', { ascending: true });
@@ -53,9 +54,33 @@ export default function AdminBanners() {
     setMsg(null);
   }
 
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setMsg(null);
+
+    const isVideo = file.type.startsWith('video/');
+    const ext = file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg');
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage.from('banners').upload(path, file);
+    if (uploadError) {
+      setMsg('فشل رفع الملف: ' + uploadError.message);
+      setUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from('banners').getPublicUrl(path);
+    setForm((f) => ({ ...f, media_type: isVideo ? 'video' : 'image', media_url: data.publicUrl }));
+    setUploading(false);
+    setMsg('تم رفع الملف بنجاح ✓ دوس "إضافة الإعلان" عشان تنشره.');
+  }
+
   async function save() {
     if (!form.media_url.trim()) {
-      setMsg('اكتب رابط الصورة أو الفيديو أولًا.');
+      setMsg('اختار صورة أو فيديو من جهازك أولًا.');
       return;
     }
 
@@ -120,17 +145,28 @@ export default function AdminBanners() {
             )}
           </div>
 
-          <select className={input} value={form.media_type} onChange={(e) => set('media_type', e.target.value as 'image' | 'video')}>
-            <option value="image">صورة</option>
-            <option value="video">فيديو</option>
-          </select>
+          <div>
+            <label className="mb-1 block text-xs text-slate-500">اختر صورة أو فيديو من جهازك</label>
+            <input
+              className={input}
+              type="file"
+              accept="image/*,video/*"
+              onChange={handleFileChange}
+              disabled={uploading}
+            />
+          </div>
 
-          <input
-            className={input}
-            placeholder={form.media_type === 'video' ? 'رابط الفيديو (mp4)' : 'رابط الصورة'}
-            value={form.media_url}
-            onChange={(e) => set('media_url', e.target.value)}
-          />
+          {uploading && <p className="text-xs text-sky">جاري رفع الملف...</p>}
+
+          {form.media_url && (
+            <div className="h-28 w-full overflow-hidden rounded-xl bg-slate-100">
+              {form.media_type === 'video' ? (
+                <video src={form.media_url} className="h-full w-full object-cover" muted controls />
+              ) : (
+                <img src={form.media_url} alt="معاينة" className="h-full w-full object-cover" />
+              )}
+            </div>
+          )}
 
           <input
             className={input}
@@ -149,7 +185,7 @@ export default function AdminBanners() {
             مفعّل (يظهر للمتقدمين)
           </label>
 
-          <button onClick={save} className="w-full rounded-xl bg-navy py-3 text-sm font-bold text-white">
+          <button onClick={save} disabled={uploading} className="w-full rounded-xl bg-navy py-3 text-sm font-bold text-white disabled:opacity-60">
             {editingId ? 'حفظ التعديلات' : 'إضافة الإعلان'}
           </button>
 
