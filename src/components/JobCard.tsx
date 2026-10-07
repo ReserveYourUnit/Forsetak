@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Job } from '../types';
 
 export function JobCard({ job }: { job: Job }) {
+  const hasSalary = typeof job.salary_min === 'number' && typeof job.salary_max === 'number';
   return (
     <Link
       to={`/jobs/${job.id}`}
@@ -25,7 +26,9 @@ export function JobCard({ job }: { job: Job }) {
         </p>
         <div className="mt-2 flex items-center justify-between">
           <span className="text-sm font-semibold text-sky">
-            {job.salary_min.toLocaleString()} {job.currency} - {job.salary_max.toLocaleString()} {job.currency}
+            {hasSalary
+              ? `${job.salary_min.toLocaleString()} ${job.currency} - ${job.salary_max.toLocaleString()} ${job.currency}`
+              : 'الراتب غير محدد'}
           </span>
           <span className="rounded-full bg-navy-50 px-2.5 py-1 text-[11px] font-medium text-navy-600">{job.contract_type}</span>
         </div>
