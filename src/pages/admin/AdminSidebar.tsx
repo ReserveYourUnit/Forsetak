@@ -6,6 +6,7 @@ const ITEMS = [
   { key: 'applicants', label: 'المتقدمون', to: '/admin/applicants' },
   { key: 'payments', label: 'المدفوعات', to: '/admin/payments' },
   { key: 'jobs', label: 'الوظائف', to: '/admin/jobs' },
+  { key: 'banners', label: 'الإعلانات', to: '/admin/banners' },
   { key: 'companies', label: 'الشركات', to: '/admin/companies' },
   { key: 'countries', label: 'الدول', to: '/admin/countries' },
   { key: 'professions', label: 'المهن والحرف', to: '/admin/professions' },
