@@ -8,7 +8,7 @@ export function BannerCarousel({ banners }: { banners: Banner[] }) {
     if (banners.length <= 1) return;
     const t = setInterval(() => {
       setIndex((i) => (i + 1) % banners.length);
-    }, 4500);
+    }, 5000);
     return () => clearInterval(t);
   }, [banners.length]);
 
@@ -16,33 +16,10 @@ export function BannerCarousel({ banners }: { banners: Banner[] }) {
 
   const current = banners[index];
 
-  function openLink() {
-    if (current.link_url) {
-      window.open(current.link_url, '_blank', 'noopener,noreferrer');
-    }
-  }
-
   return (
     <div className="mx-4 mt-4">
-      <div
-        onClick={openLink}
-        className={`relative aspect-[16/9] w-full overflow-hidden rounded-2xl bg-slate-100 shadow-card ${
-          current.link_url ? 'cursor-pointer' : ''
-        }`}
-      >
-        {current.media_type === 'video' ? (
-          <video
-            key={current.id}
-            src={current.media_url}
-            className="h-full w-full object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-          />
-        ) : (
-          <img key={current.id} src={current.media_url} alt="إعلان" className="h-full w-full object-cover" />
-        )}
+      <div className="flex min-h-[72px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-amber to-amber-400 px-5 py-4 text-center shadow-card">
+        <p className="text-sm font-bold leading-relaxed text-navy">{current.text_content}</p>
       </div>
       {banners.length > 1 && (
         <div className="mt-2 flex items-center justify-center gap-1.5">
@@ -60,4 +37,4 @@ export function BannerCarousel({ banners }: { banners: Banner[] }) {
       )}
     </div>
   );
-                }
+}
