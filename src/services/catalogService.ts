@@ -1,6 +1,7 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
 import { DEMO_COUNTRIES, DEMO_JOBS, DEMO_PROFESSIONS } from '../lib/demoData';
 import { Country, Job, Profession } from '../types';
+import { Banner } from '../types/banner';
 
 export async function fetchCountries(): Promise<Country[]> {
   if (!isSupabaseConfigured) return DEMO_COUNTRIES;
@@ -116,3 +117,17 @@ export async function fetchJobById(id: string): Promise<Job | undefined> {
   }
   return mapJob(data);
 }
+
+export async function fetchBanners(): Promise<Banner[]> {
+  if (!isSupabaseConfigured) return [];
+  const { data, error } = await supabase
+    .from('banners')
+    .select('id, text_content, sort_order, active')
+    .eq('active', true)
+    .order('sort_order', { ascending: true });
+  if (error) {
+    console.error('fetchBanners error', error);
+    return [];
+  }
+  return (data ?? []) as Banner[];
+  }
